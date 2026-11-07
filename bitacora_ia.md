@@ -21,8 +21,8 @@ Asistente usado: Claude (chat)
 - **Fecha:** 2026-11-07
 - **Prompt o sugerencia:** Para comprobar que las pruebas fallan sin implementación, eliminar temporalmente `src/extraerTarea.ts`.
 - **Decisión:** Aceptada con cambios
-- **Por qué:** Borrar el archivo ponía en riesgo el código que ya funcionaba. Hice una copia de seguridad y commiteé primero solo `tests/`.
-- **Verificación:** [COMPLETAR: qué viste al correr `npm test` sin `src/`]
+- **Por qué:** Borrar el archivo ponía en riesgo el código que ya funcionaba. En su lugar commiteé primero solo `tests/` y ejecuté las pruebas sobre ese commit.
+- **Verificación:** `npm test` sobre fa91b3e falló con `Cannot find module '../src/extraerTarea'`.
 - **Commit relacionado:** fa91b3e
 
 ### Entrada 3
@@ -46,11 +46,20 @@ Asistente usado: Claude (chat)
 ### Entrada 5
 
 - **Fecha:** 2026-11-07
-- **Prompt o sugerencia:** El asistente detectó caracteres como `CÃ¡lculo` y recomendó guardar los archivos como UTF-8.
+- **Prompt o sugerencia:** El asistente afirmó que los archivos tenían la codificación dañada (`CÃ¡lculo`) y recomendó guardarlos de nuevo como UTF-8.
+- **Decisión:** Rechazada
+- **Por qué:** Los caracteres raros aparecían al leer los archivos con `Get-Content` en PowerShell, pero la salida de `npm test` y el texto pegado desde el editor muestran bien las tildes. Era un problema de visualización de la terminal, no de los archivos.
+- **Verificación:** `npm test` muestra "título" y "Cálculo" correctamente y el código se ve bien en el editor.
+- **Commit relacionado:** Ninguno (no hubo cambios)
+
+### Entrada 6
+
+- **Fecha:** 2026-11-07
+- **Prompt o sugerencia:** El asistente propuso reemplazar los números 3600000, 48 y 168 de `calcularUrgencia` por constantes con nombre (`MS_POR_HORA`, `HORAS_URGENCIA_ALTA`, `HORAS_URGENCIA_MEDIA`).
 - **Decisión:** Aceptada
-- **Por qué:** La codificación dañaba comentarios y mensajes de error.
-- **Verificación:** [COMPLETAR cuando lo corrijas: cómo confirmaste que las tildes se ven bien]
-- **Commit relacionado:** [COMPLETAR: hash del commit de refactor]
+- **Por qué:** Los números sueltos no explican su significado; con nombres, la regla de urgencia se lee igual que en el README y es más fácil de cambiar.
+- **Verificación:** `npm test` siguió con 10 de 10 sin modificar las pruebas, y los operadores `<` y `<=` quedaron iguales.
+- **Commit relacionado:** 007021f
 
 ## Resumen
 
@@ -58,12 +67,12 @@ Asistente usado: Claude (chat)
 |---|---|
 | Aceptadas | 4 |
 | Aceptadas con cambios | 1 |
-| Rechazadas | 0 |
+| Rechazadas | 1 |
 
 ## Errores que atraparon las pruebas
 
 En la fase roja del TDD, antes de existir `src/extraerTarea.ts`, ejecuté `npm test` sobre el commit de pruebas (fa91b3e) y falló con el error `Cannot find module '../src/extraerTarea'`, lo que confirmó que las pruebas dependen de la implementación y que no pasan por accidente. Después de implementar la función (be03ba2), las 10 pruebas pasaron. No encontré errores de lógica en el código al ejecutarlas, pero las pruebas de los límites de urgencia (exactamente 48 horas es media, un minuto menos es alta, un minuto más de 7 días es baja) protegen los casos donde es más fácil equivocarse al comparar fechas.
 
-## Reflexión final (5 a 8 líneas)
+## Reflexión final
 
-La ayuda de la IA fue clave para entender cómo aplicar TDD de verdad en Git. Me guio para armar commits atómicos —uno para la configuración, otro para las pruebas y otro para el código— y pilló detalles finos como un archivo arrastrado por error y la codificación UTF-8 que yo no había visto. La lección principal fue que el valor no está solo en que el test pase, sino en que el historial cuente la historia correcta. Aprendí a usar git show --stat para verificar cada cambio antes de confirmar. En el próximo módulo, arrancaré directo con el commit en rojo y revisaré la codificación del editor desde el minuto uno.
+La ayuda de la IA fue clave para entender cómo aplicar TDD de verdad en Git. Me guio para armar commits con un solo propósito: uno para la configuración, otro para las pruebas y otro para el código. También detectó un archivo arrastrado por error en un commit. Aprendí que no basta con que el test pase: el historial debe contar la historia correcta, y conviene verificar cada cambio con `git show --stat`. También aprendí a no aceptar todo sin comprobarlo: una sugerencia sobre la codificación resultó ser un problema de la terminal. En el próximo módulo empezaré directo con el commit en rojo.
