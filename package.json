@@ -1,0 +1,19 @@
+{
+  "name": "studysync",
+  "version": "1.0.0",
+  "description": "Gestor de tareas y entregas para estudiantes con asistente de IA. El estudiante pega el mensaje de un profesor y el sistema extrae la tarea (título, materia, fecha límite, plataforma y urgencia).",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "ts-jest": "^29.4.15",
+    "typescript": "^7.0.2"
+  }
+}
