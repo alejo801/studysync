@@ -35,6 +35,11 @@ export class RespuestaModeloError extends Error {
 
 const PLATAFORMAS: Plataforma[] = ["WhatsApp", "Moodle", "Teams", "Q10", "Canvas"];
 
+// Umbrales de urgencia (supuesto del proyecto, ver README).
+const MS_POR_HORA = 60 * 60 * 1000;
+const HORAS_URGENCIA_ALTA = 48; // menos de 48 h: alta
+const HORAS_URGENCIA_MEDIA = 7 * 24; // hasta 168 h (7 días) inclusive: media
+
 // Convierte una fecha a texto "AAAA-MM-DDTHH:mm" en hora local.
 function aTextoLocal(fecha: Date): string {
   const dos = (n: number) => String(n).padStart(2, "0");
@@ -62,11 +67,12 @@ function calcularUrgencia(fechaLimite: string | null, hoy: Date): Urgencia {
   if (fechaLimite === null) {
     return "media";
   }
-  const horas = (new Date(fechaLimite).getTime() - hoy.getTime()) / 3600000;
-  if (horas < 48) {
+  const horasRestantes =
+    (new Date(fechaLimite).getTime() - hoy.getTime()) / MS_POR_HORA;
+  if (horasRestantes < HORAS_URGENCIA_ALTA) {
     return "alta";
   }
-  if (horas <= 168) {
+  if (horasRestantes <= HORAS_URGENCIA_MEDIA) {
     return "media";
   }
   return "baja";
