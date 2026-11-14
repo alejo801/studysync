@@ -1,10 +1,84 @@
 # StudySync.AI
 
-Gestor de tareas y entregas para estudiantes con asistente de IA. El estudiante pega el mensaje de un profesor y el sistema extrae la tarea (título, materia, fecha límite, plataforma y urgencia).
+## 1. Qué es
 
-Estudiante: Luis Alejandro Perez Ordoñez
+StudySync.AI es un gestor de tareas y entregas para estudiantes con asistente de IA. El estudiante pega el mensaje informal de un profesor (por ejemplo, «el taller de integrales es para este jueves a las 11:59 pm por Moodle») y el sistema extrae la tarea: título, materia, fecha límite, plataforma y urgencia.
 
-## Funcionalidad de la semana 5
+Este repositorio contiene el primer incremento del proyecto: la función `extraerTarea` (historia de usuario HU-01), con sus pruebas, su revisión de código y seguridad, y la bitácora de uso de IA. La interfaz (Ionic) y la API quedan para los siguientes incrementos.
+
+## 2. Requisitos
+
+- Node.js 20 o superior (probado con la versión 24)
+- npm (viene con Node.js)
+- Git
+
+## 3. Instalación
+
+```bash
+git clone https://github.com/alejo801/studysync.git
+cd studysync
+npm install
+```
+
+## 4. Ejecución
+
+Este incremento no tiene interfaz ni servidor: es una función que se usa desde código. Recibe el mensaje, la fecha de hoy y una función que llama al modelo de lenguaje. Ejemplo con un modelo simulado:
+
+```ts
+import { extraerTarea } from "./src/extraerTarea";
+
+const modeloSimulado = async () =>
+  JSON.stringify({
+    tarea: { titulo: "Taller de Cálculo Integral", materia: "Cálculo Integral", fechaLimite: "2026-10-29T23:59", plataforma: "Moodle" },
+  });
+
+extraerTarea("el taller de integrales es para este jueves a las 11:59pm por Moodle", new Date(), modeloSimulado)
+  .then(console.log);
+```
+
+Cuando se conecte la API real del modelo de lenguaje, la clave irá en una variable de entorno: copia `.env.example` como `.env` y reemplaza el valor. El archivo `.env` está en `.gitignore` y nunca se sube al repositorio.
+
+## 5. Pruebas
+
+```bash
+npm test
+```
+
+Ejecuta las 15 pruebas con Jest: 10 de la semana 5 y 5 nuevas de la revisión de la semana 6. Para pasar el linter (ESLint con reglas de seguridad):
+
+```bash
+npm run lint
+```
+
+## 6. Estructura
+
+```
+studysync/
+├── src/
+│   └── extraerTarea.ts            # función extraerTarea y sus errores
+├── tests/
+│   ├── extraerTarea.test.ts       # pruebas de la semana 5
+│   └── extraerTarea.revision.test.ts  # pruebas nuevas de la semana 6
+├── bitacora_ia.md                 # registro de uso de IA
+├── revision_seguridad.md          # informe de revisión de código y seguridad
+├── eslint.config.mjs              # configuración del linter
+├── .env.example                   # ejemplo de variables de entorno
+├── jest.config.js
+├── tsconfig.json
+└── package.json
+```
+
+## 7. Uso de IA
+
+Se usó Claude (Anthropic, en chat) para proponer las pruebas, la implementación, el refactor, la revisión de código y los borradores del README y de los docstrings. Cada sugerencia se verificó con las pruebas, el linter o la lectura del código. Las decisiones están en `bitacora_ia.md` y la revisión de seguridad con IA, en `revision_seguridad.md`.
+
+## 8. Autor y licencia
+
+Autor: Luis Alejandro Perez Ordoñez. Licencia: ISC.
+
+---
+
+## Funcionalidad de la semana 5: HU-01 extraer la tarea de un mensaje
 
 ### Historia de usuario
 
@@ -70,7 +144,7 @@ Una `Tarea` con los cinco campos. La función calcula la urgencia a partir de la
 |---|---|---|
 | El mensaje está vacío o solo tiene espacios (no se llama al modelo) | `MensajeVacioError` | «El mensaje está vacío» |
 | El modelo responde `{ "tarea": null }` | `MensajeSinTareaError` | «No encontré ninguna tarea en este mensaje» |
-| El modelo responde algo que no es JSON válido o sin los campos obligatorios | `RespuestaModeloError` | «No pude interpretar la respuesta del asistente» |
+| El modelo responde algo que no es JSON válido, sin los campos obligatorios, con título o materia vacíos, con una plataforma que no está en la lista o con una fecha que no existe | `RespuestaModeloError` | «No pude interpretar la respuesta del asistente» |
 
 **Supuestos y casos límite**
 
@@ -117,9 +191,3 @@ Una `Tarea` con los cinco campos. La función calcula la urgencia a partir de la
 - Entrada: mensaje «hola, ¿cómo van con el parcial?».
 - Resultado: lanza `MensajeSinTareaError` con el mensaje «No encontré ninguna tarea en este mensaje».
 
-### Cómo ejecutar las pruebas
-
-```bash
-npm install
-npm test
-```
