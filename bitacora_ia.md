@@ -79,6 +79,15 @@ Asistente usado: Claude (chat)
 - **Verificación:**`npm run` lint queda sin errores y git diff tests/extraerTarea.test.ts no muestra cambios.
 - **Commit relacionado:** ea90b39
 
+### Entrada 9
+
+- **Fecha:** 2026-11-14
+- **Prompt o sugerencia:** Al aplicar el prompt de revisión de seguridad sobre `src/extraerTarea.ts`, el asistente señaló riesgo de cierre prematuro de `</mensaje>` (H-07), falta de límite de longitud (H-08) y falta de prueba para fechas vencidas (H-09), además de sospechas sobre `__proto__` en `JSON.parse` y horario de verano en `esFechaValida`.
+- **Decisión:** Aceptada con cambios
+- **Por qué:** Se descartaron los dos falsos positivos tras verificarlos (`JSON.parse('{"__proto__":{"tarea":null}}')` lanza `RespuestaModeloError` y Colombia no tiene horario de verano) y se documentaron H-07, H-08 y H-09 en `revision_seguridad.md` para atenderlos en el siguiente incremento.
+- **Verificación:** `npm run lint` queda en 0 errores, `npm test` pasa con 15 de 15 pruebas aprobadas y los hallazgos quedaron registrados en `revision_seguridad.md`.
+- **Commit relacionado:** 49c5c05
+
 ## Resumen
 
 | Decisión | Cantidad |
