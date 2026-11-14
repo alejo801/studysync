@@ -4,16 +4,21 @@
   "description": "Gestor de tareas y entregas para estudiantes con asistente de IA. El estudiante pega el mensaje de un profesor y el sistema extrae la tarea (título, materia, fecha límite, plataforma y urgencia).",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-security": "^4.2.1",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2"
   }
 }
